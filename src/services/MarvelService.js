@@ -1,6 +1,8 @@
+const API_KEY = process.env.REACT_APP_API_KEY;
+
 class MarvelService {
   #apiBaseUrl = "https://gateway.marvel.com:443/v1/public";
-  #apiPublicKey = "apikey=4a4925b838851c7de398b4ffaf6ece12";
+  #apiPublicKey = `apikey=${API_KEY}`;
 
   getMarvelCharactersData = async (url) => {
     try {
@@ -12,20 +14,17 @@ class MarvelService {
 
       return await responce.json();
     } catch (e) {
-      // console.log(e.name);
       return e.name;
     }
   };
 
-  getAllCharactersData = async () => {
+  getAllCharactersData = async (offset = 210) => {
     const allCharactersData = await this.getMarvelCharactersData(
-      `${this.#apiBaseUrl}/characters?limit=9&offset=210&${this.#apiPublicKey}`
+      `${this.#apiBaseUrl}/characters?limit=9&offset=${offset}&${this.#apiPublicKey}`
     );
 
     return allCharactersData.data.results.map((characterList) => {
-      const emptyArray = [];
-
-      return this._transformCharactersData(emptyArray.concat(characterList));
+      return this._transformCharactersData(characterList);
     });
   };
 
@@ -34,19 +33,18 @@ class MarvelService {
       `${this.#apiBaseUrl}/characters/${charactersId}?${this.#apiPublicKey}`
     );
 
-    return this._transformCharactersData(charactersDataById.data.results);
+    return this._transformCharactersData(charactersDataById.data.results[0]);
   };
 
   _transformCharactersData = (charactersData) => {
     return {
-      id: charactersData.map((character) => character.id).join(),
-      name: charactersData.map((character) => character.name).join(),
-      thumbnail: charactersData
-        .map((character) => `${character.thumbnail.path}.${character.thumbnail.extension}`)
-        .join(),
-      description: charactersData.map((character) => character.description).join(),
-      homepage: charactersData.map((character) => character.urls[0].url).join(),
-      wiki: charactersData.map((character) => character.urls[1].url).join(),
+      id: charactersData.id,
+      name: charactersData.name,
+      thumbnail: charactersData.thumbnail.path + "." + charactersData.thumbnail.extension,
+      description: charactersData.description,
+      homepage: charactersData.urls[0].url,
+      wiki: charactersData.urls[1].url,
+      comics: charactersData.comics.items.splice(0, 10),
     };
   };
 }

@@ -14,9 +14,11 @@ class RandomChar extends Component {
     error: false,
   };
 
-  marvelService = new MarvelService();
-
-  characterLoaded = (character) => this.setState({ character, loading: false });
+  setLoading = () => {
+    this.setState({
+      loading: true,
+    });
+  };
 
   setError = () => {
     this.setState({
@@ -25,18 +27,23 @@ class RandomChar extends Component {
     });
   };
 
+  clearError = () => {
+    this.setState({
+      error: true,
+    });
+  };
+
+  marvelService = new MarvelService();
+
+  characterLoaded = (character) => this.setState({ character, loading: false });
+
   randomId = (min, max) => {
     return min + Math.random() * (max - min);
   };
 
-  setLoading = () => {
-    this.setState({
-      loading: true,
-    });
-  };
-
   getCharacterData = () => {
     const id = this.randomId(1011000, 1011400).toFixed();
+
     this.setLoading();
 
     this.marvelService.getCharactersDataById(id).then(this.characterLoaded).catch(this.setError);
@@ -51,12 +58,6 @@ class RandomChar extends Component {
   componentDidMount() {
     this.getCharacterData();
   }
-
-  clearError = () => {
-    this.setState(({ error }) => ({
-      error: true,
-    }));
-  };
 
   render() {
     const { character, loading, error } = this.state;

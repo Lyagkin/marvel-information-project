@@ -2,10 +2,14 @@ import "./Spinner.scss";
 
 import spinner from "../../resources/img/spinner.gif";
 
-function Spinner() {
+function Spinner({ upLoading }) {
+  let styleUploading;
+
+  styleUploading = upLoading ? "uploadingSpinner" : null;
+
   return (
     <div className="spinner">
-      <img src={spinner} alt="spinner" />
+      <img className={styleUploading} src={spinner} alt="spinner" />
     </div>
   );
 }
